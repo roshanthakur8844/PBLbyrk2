@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Helping System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://raw.githubusercontent.com/your-github-user/your-repo/main/background.jpg') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        input, select {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: blue;
+            box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: darkblue;
+            transform: scale(1.05);
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .google-btn:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+        }
+
+        .google-btn img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        #message {
+            margin-top: 10px;
+            color: red;
+            font-size: 14px;
+        }
+
+        #toggle {
+            cursor: pointer;
+            color: blue;
+            margin-top: 10px;
+        }
+
+        #suggestion {
+            color: green;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .profile-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 10px auto;
+            object-fit: cover;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 id="form-title">Sign Up</h2>
+    
+    <!-- Signup Form -->
+    <div id="signup-form">
+        <input type="text" id="signup-fullname" placeholder="Full Name" required>
+        <input type="text" id="signup-username" placeholder="Create Username" required onkeyup="checkUsername()">
+        <p id="suggestion"></p>
+        <input type="email" id="signup-email" placeholder="Email Address" required>
+        <input type="tel" id="signup-phone" placeholder="Phone Number" required>
+        <select id="signup-role">
+            <option value="teacher">Teacher</option>
+            <option value="admin">Admin</option>
+        </select>
+        <input type="file" id="signup-profile" accept="image/*" onchange="previewProfile()">
+        <img id="profile-preview" class="profile-preview">
+        <input type="password" id="signup-password" placeholder="Create Password" required>
+        <button onclick="signup()">Sign Up</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form" style="display: none;">
+        <input type="text" id="login-username" placeholder="Enter Username" required>
+        <input type="password" id="login-password" placeholder="Enter Password" required>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Google Login -->
+    <div class="google-btn" onclick="googleLogin()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
+        <span>Login with Google</span>
+    </div>
+
+    <p id="message"></p>
+    <p id="toggle" onclick="toggleForm()">Already have an account? Login</p>
+</div>
+
+<script>
+    let isSignup = true;
+
+    function signup() {
+        let fullname = document.getElementById("signup-fullname").value.trim();
+        let username = document.getElementById("signup-username").value.trim();
+        let email = document.getElementById("signup-email").value.trim();
+        let phone = document.getElementById("signup-phone").value.trim();
+        let role = document.getElementById("signup-role").value;
+        let password = document.getElementById("signup-password").value.trim();
+        let message = document.getElementById("message");
+
+        if (fullname === "" || username === "" || email === "" || phone === "" || password === "") {
+            message.innerText = "All fields are required!";
+            return;
+        }
+
+        if (localStorage.getItem(username)) {
+            message.innerText = "Username already exists!";
+        } else {
+            let userData = { fullname, email, phone, role, password: btoa(password) };
+            localStorage.setItem(username, JSON.stringify(userData));
+            message.style.color = "green";
+            message.innerText = "Account created successfully!";
+            toggleForm();
+        }
+    }
+
+    function login() {
+        let username = document.getElementById("login-username").value.trim();
+        let password = document.getElementById("login-password").value.trim();
+        let message = document.getElementById("message");
+
+        let userData = JSON.parse(localStorage.getItem(username));
+        if (userData && atob(userData.password) === password) {
+            message.style.color = "green";
+            message.innerText = "Login successful!";
+            setTimeout(() => window.location.href = "https://raw.githubusercontent.com/roshanthakur8844/PBLbyrk/refs/heads/main/hello-2488.gif", 1500);
+        } else {
+            message.innerText = "Invalid username or password!";
+        }
+    }
+
+    function toggleForm() {
+        isSignup = !isSignup;
+        document.getElementById("signup-form").style.display = isSignup ? "block" : "none";
+        document.getElementById("login-form").style.display = isSignup ? "none" : "block";
+        document.getElementById("form-title").innerText = isSignup ? "Sign Up" : "Login";
+        document.getElementById("toggle").innerText = isSignup ? "Already have an account? Login" : "Don't have an account? Sign Up";
+        document.getElementById("message").innerText = "";
+    }
+
+    function previewProfile() {
+        let file = document.getElementById("signup-profile").files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("profile-preview").src = e.target.result;
+                document.getElementById("profile-preview").style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+</body>
+</html>
